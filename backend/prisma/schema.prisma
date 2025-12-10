@@ -1,0 +1,348 @@
+// Prisma Schema para Sistema de Gestión Formativa - Proyecto ALICE LARDÉ
+// Base de datos: SQLite (desarrollo) / PostgreSQL (producción)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"  // Cambiar a "postgresql" en producción
+  url      = env("DATABASE_URL")
+}
+
+// ==================== USUARIOS Y AUTENTICACIÓN ====================
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  username    String   @unique
+  password    String   // bcrypt hashed
+  fullName    String
+  role        String   @default("COORDINADOR") // ADMIN_OEI, COORDINADOR, PROVEEDOR, CONSULTA
+  isActive    Boolean  @default(false)
+  isApproved  Boolean  @default(false) // Requiere aprobación de admin
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lastLogin   DateTime?
+  
+  // Relaciones
+  createdPrograms  Program[]     @relation("ProgramCreator")
+  attendances      Attendance[]
+  evaluations      Evaluation[]
+  auditLogs        AuditLog[]
+  
+  @@map("users")
+}
+
+// ==================== EMPRESAS PARTICIPANTES ====================
+
+model Company {
+  id                    String   @id @default(uuid())
+  
+  // Datos básicos
+  companyName           String
+  legalRepresentative   String
+  economicSector        String
+  department            String
+  municipality          String
+  companySize           String   // MICRO, PEQUEÑA, MEDIANA, EMPRENDIMIENTO
+  employeeCount         Int
+  yearsInOperation      Int
+  phone                 String?
+  email                 String?
+  address               String?
+  
+  // Perfil de entrada
+  initialDigitalizationLevel Int @default(1) // 1-5
+  formativeNeeds        String? // JSON array
+  areasOfInterest       String? // JSON array
+  previousTraining      Boolean @default(false)
+  techInfrastructure    String? // JSON: {internet, computers, etc}
+  
+  // Perfil de salida (se llena al finalizar programas)
+  finalDigitalizationLevel Int? // 1-5
+  acquiredCompetencies  String? // JSON array
+  certificates          String? // JSON array
+  postFormationPlan     String?
+  
+  // Metadata
+  status                String   @default("ACTIVO") // ACTIVO, INACTIVO, EGRESADO
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  // Relaciones
+  enrollments           Enrollment[]
+  
+  @@map("companies")
+}
+
+// ==================== PROGRAMAS FORMATIVOS ====================
+
+model Program {
+  id              String   @id @default(uuid())
+  
+  // Información básica
+  name            String
+  description     String?
+  objectives      String? // JSON array
+  provider        String
+  duration        Int      // Horas totales
+  modality        String   // PRESENCIAL, VIRTUAL, HIBRIDA
+  startDate       DateTime
+  endDate         DateTime
+  maxCapacity     Int      @default(30)
+  
+  // Competencias
+  competencies    String?  // JSON array
+  prerequisites   String?  // JSON array
+  
+  // Estado
+  status          String   @default("PLANIFICADO") // PLANIFICADO, EN_CURSO, FINALIZADO, CANCELADO
+  
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  createdBy       String
+  creator         User     @relation("ProgramCreator", fields: [createdBy], references: [id])
+  
+  // Relaciones
+  sessions        Session[]
+  enrollments     Enrollment[]
+  evaluations     Evaluation[]
+  
+  @@map("programs")
+}
+
+// ==================== SESIONES DE PROGRAMAS ====================
+
+model Session {
+  id              String   @id @default(uuid())
+  
+  // Información de sesión
+  sessionNumber   Int
+  topic           String
+  description     String?
+  date            DateTime
+  startTime       String   // HH:mm
+  endTime         String   // HH:mm
+  duration        Int      // Minutos
+  modality        String   // PRESENCIAL, VIRTUAL
+  virtualLink     String?
+  instructor      String?
+  materials       String?  // JSON array de URLs
+  
+  // Relación con programa
+  programId       String
+  program         Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relaciones
+  attendances     Attendance[]
+  
+  @@map("sessions")
+}
+
+// ==================== INSCRIPCIONES ====================
+
+model Enrollment {
+  id              String   @id @default(uuid())
+  
+  // Estado de inscripción
+  status          String   @default("INSCRITO") // INSCRITO, LISTA_ESPERA, CONFIRMADO, CANCELADO, COMPLETADO, ABANDONADO
+  enrollmentDate  DateTime @default(now())
+  completionDate  DateTime?
+  cancellationReason String?
+  
+  // Progreso
+  completionPercentage Float @default(0.0)
+  totalSessions   Int      @default(0)
+  attendedSessions Int     @default(0)
+  
+  // Relaciones
+  companyId       String
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  programId       String
+  program         Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([companyId, programId])
+  @@map("enrollments")
+}
+
+// ==================== ASISTENCIAS ====================
+
+model Attendance {
+  id              String   @id @default(uuid())
+  
+  // Registro de asistencia
+  status          String   // PRESENTE, AUSENTE, TARDANZA, JUSTIFICADO
+  arrivalTime     String?  // HH:mm
+  departureTime   String?  // HH:mm
+  justification   String?
+  observations    String?
+  
+  // Relaciones
+  sessionId       String
+  session         Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  companyId       String
+  
+  registeredBy    String
+  registrar       User     @relation(fields: [registeredBy], references: [id])
+  
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([sessionId, companyId])
+  @@map("attendances")
+}
+
+// ==================== EVALUACIONES ====================
+
+model Evaluation {
+  id              String   @id @default(uuid())
+  
+  // Información de evaluación
+  evaluationType  String   // DIAGNOSTICA, FORMATIVA, SUMATIVA
+  evaluationName  String
+  scale           String   @default("1-10") // 1-10, A-F, APROBADO/REPROBADO
+  score           Float
+  isPassed        Boolean  @default(false)
+  comments        String?
+  
+  // Relaciones
+  programId       String
+  program         Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  
+  companyId       String
+  
+  evaluatedBy     String
+  evaluator       User     @relation(fields: [evaluatedBy], references: [id])
+  
+  // Metadata
+  evaluationDate  DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("evaluations")
+}
+
+// ==================== LOGS DE AUDITORÍA ====================
+
+model AuditLog {
+  id              String   @id @default(uuid())
+  
+  // Información de acción
+  action          String   // CREATE, UPDATE, DELETE, LOGIN, LOGOUT
+  entity          String   // USER, COMPANY, PROGRAM, ENROLLMENT, etc.
+  entityId        String?
+  changes         String?  // JSON: {before: {...}, after: {...}}
+  ipAddress       String?
+  userAgent       String?
+  
+  // Usuario que realizó la acción
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id])
+  
+  // Metadata
+  timestamp       DateTime @default(now())
+  
+  @@map("audit_logs")
+}
+
+// ==================== CONFIGURACIÓN DEL SISTEMA ====================
+
+model SystemConfig {
+  id              String   @id @default(uuid())
+  key             String   @unique
+  value           String
+  description     String?
+  updatedAt       DateTime @updatedAt
+  
+  @@map("system_config")
+}
+
+// ==================== CATÁLOGOS ====================
+
+model Catalog {
+  id              String   @id @default(uuid())
+  category        String   // SECTOR_ECONOMICO, DEPARTAMENTO, MUNICIPIO, COMPETENCIA, etc.
+  value           String
+  label           String
+  isActive        Boolean  @default(true)
+  order           Int      @default(0)
+  parentId        String?  // Para catálogos jerárquicos (ej: municipio -> departamento)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("catalogs")
+}
+
+// ==================== EMPRENDEDORES ====================
+
+model Entrepreneur {
+  id              String   @id @default(uuid())
+  
+  // 1. Datos Generales del Emprendedor
+  fullName        String
+  dui             String?  // Documento Único de Identidad
+  age             Int
+  sex             String   // FEMENINO, MASCULINO
+  email           String   @unique
+  phone           String
+  municipality    String
+  department      String
+  zone            String   // URBANA, RURAL
+  
+  // 2. Información del Emprendimiento
+  businessName    String
+  startYear       Int
+  businessStage   String   // IDEA, EN_MARCHA, EN_CRECIMIENTO, CONSOLIDADO
+  productiveSector String  // AGROINDUSTRIA, TECNOLOGIA, COMERCIO, SERVICIOS, TURISMO, MANUFACTURA, ECONOMIA_CREATIVA, OTRO
+  sectorOther     String?  // Si seleccionó "OTRO"
+  employeeCount   Int
+  legalStatus     String   // INFORMAL, FORMAL
+  website         String?
+  
+  // 3. Motivaciones y Objetivos
+  motivation      String
+  mission         String
+  desiredImpact   String
+  
+  // 4. Aspectos Financieros y Operativos
+  fundingSources  String   // JSON array: AHORROS_PROPIOS, FAMILIARES, CREDITOS, COOPERATIVAS, PROGRAMAS_GOB, INVERSIONISTAS
+  hasTaxId        Boolean  @default(false)
+  monthlySales    String   // <100, 100-500, 500-2000, >2000
+  challenges      String   // JSON array: FINANCIAMIENTO, COMERCIALIZACION, TECNOLOGIA, CAPACITACION, FORMALIZACION, RRHH, OTRO
+  challengesOther String?
+  
+  // 5. Innovación y Tecnología
+  usesDigitalTools Boolean @default(false)
+  digitalToolsList String? // Cuáles herramientas
+  interestedInTraining Boolean @default(false)
+  hasInnovation   Boolean  @default(false)
+  innovationDescription String?
+  
+  // 6. Expectativas y Apoyo Requerido
+  supportNeeded   String   // JSON array: CAPACITACION, MENTORIA, FINANCIAMIENTO, NETWORKING, DIGITALIZACION, ACCESO_MERCADOS
+  willingToParticipate Boolean @default(false)
+  trainingTopics  String?
+  
+  // 7. Declaración
+  acceptsTerms    Boolean  @default(true)
+  
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("entrepreneurs")
+}

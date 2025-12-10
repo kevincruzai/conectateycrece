@@ -1,0 +1,42 @@
+-- CreateTable
+CREATE TABLE "entrepreneurs" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "fullName" TEXT NOT NULL,
+    "age" INTEGER NOT NULL,
+    "sex" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
+    "municipality" TEXT NOT NULL,
+    "department" TEXT NOT NULL,
+    "zone" TEXT NOT NULL,
+    "businessName" TEXT NOT NULL,
+    "startYear" INTEGER NOT NULL,
+    "businessStage" TEXT NOT NULL,
+    "productiveSector" TEXT NOT NULL,
+    "sectorOther" TEXT,
+    "employeeCount" INTEGER NOT NULL,
+    "legalStatus" TEXT NOT NULL,
+    "website" TEXT,
+    "motivation" TEXT NOT NULL,
+    "mission" TEXT NOT NULL,
+    "desiredImpact" TEXT NOT NULL,
+    "fundingSources" TEXT NOT NULL,
+    "hasTaxId" BOOLEAN NOT NULL DEFAULT false,
+    "monthlySales" TEXT NOT NULL,
+    "challenges" TEXT NOT NULL,
+    "challengesOther" TEXT,
+    "usesDigitalTools" BOOLEAN NOT NULL DEFAULT false,
+    "digitalToolsList" TEXT,
+    "interestedInTraining" BOOLEAN NOT NULL DEFAULT false,
+    "hasInnovation" BOOLEAN NOT NULL DEFAULT false,
+    "innovationDescription" TEXT,
+    "supportNeeded" TEXT NOT NULL,
+    "willingToParticipate" BOOLEAN NOT NULL DEFAULT false,
+    "trainingTopics" TEXT,
+    "acceptsTerms" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "entrepreneurs_email_key" ON "entrepreneurs"("email");
