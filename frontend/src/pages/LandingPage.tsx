@@ -3,7 +3,6 @@ import {
   UserGroupIcon, 
   ChartBarIcon, 
   AcademicCapIcon,
-  BanknotesIcon,
   SparklesIcon,
   GlobeAltIcon,
   CheckCircleIcon,
@@ -23,12 +22,6 @@ const LandingPage = () => {
       title: 'Capacitación',
       description: 'Accede a programas de formación en digitalización, innovación y gestión empresarial.',
       color: 'text-success-600 bg-success-100'
-    },
-    {
-      icon: BanknotesIcon,
-      title: 'Financiamiento',
-      description: 'Conecta con fuentes de financiamiento y programas de apoyo económico.',
-      color: 'text-warning-600 bg-warning-100'
     },
     {
       icon: SparklesIcon,
@@ -61,7 +54,7 @@ const LandingPage = () => {
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
               Únete al ecosistema emprendedor de El Salvador. Regístrate y accede a capacitación, 
-              mentoría, financiamiento y oportunidades de crecimiento.
+              mentoría y oportunidades de crecimiento.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

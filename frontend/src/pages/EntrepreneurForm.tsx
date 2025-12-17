@@ -144,7 +144,7 @@ const EntrepreneurForm = () => {
             Gracias por compartir tu información. Tu emprendimiento ha sido registrado exitosamente.
           </p>
           <p className="text-gray-500">
-            El equipo de OEI y Alice Lardé se pondrá en contacto contigo próximamente.
+            El equipo Alice Lardé se pondrá en contacto contigo próximamente.
           </p>
         </div>
       </div>
@@ -266,24 +266,24 @@ const EntrepreneurForm = () => {
                         <input
                           type="radio"
                           name="sex"
-                          value="FEMENINO"
-                          checked={formData.sex === 'FEMENINO'}
+                          value="MUJER"
+                          checked={formData.sex === 'MUJER'}
                           onChange={handleInputChange}
                           required
                           className="w-5 h-5 text-primary-600 focus:ring-primary-500"
                         />
-                        <span className="ml-2 text-gray-700">Femenino</span>
+                        <span className="ml-2 text-gray-700">Mujer</span>
                       </label>
                       <label className="flex items-center cursor-pointer">
                         <input
                           type="radio"
                           name="sex"
-                          value="MASCULINO"
-                          checked={formData.sex === 'MASCULINO'}
+                          value="HOMBRE"
+                          checked={formData.sex === 'HOMBRE'}
                           onChange={handleInputChange}
                           className="w-5 h-5 text-primary-600 focus:ring-primary-500"
                         />
-                        <span className="ml-2 text-gray-700">Masculino</span>
+                        <span className="ml-2 text-gray-700">Hombre</span>
                       </label>
                     </div>
                   </div>
@@ -478,16 +478,16 @@ const EntrepreneurForm = () => {
                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                       Sector productivo *
                     </label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {[
-                        { value: 'AGROINDUSTRIA', label: 'Agroindustria' },
-                        { value: 'TECNOLOGIA', label: 'Tecnología' },
-                        { value: 'COMERCIO', label: 'Comercio' },
-                        { value: 'SERVICIOS', label: 'Servicios' },
-                        { value: 'TURISMO', label: 'Turismo' },
-                        { value: 'MANUFACTURA', label: 'Manufactura' },
-                        { value: 'ECONOMIA_CREATIVA', label: 'Economía Creativa' },
-                        { value: 'OTRO', label: 'Otro' },
+                        { value: 'ARTES_VISUALES', label: 'Artes Visuales, Artesanías y Diseño' },
+                        { value: 'MUSICA_ESCENICAS', label: 'Música y Artes Escénicas' },
+                        { value: 'AUDIOVISUALES', label: 'Audiovisuales, Fotografía y Multimedia' },
+                        { value: 'VIDEOJUEGOS', label: 'Videojuegos y Tecnologías Creativas' },
+                        { value: 'EDITORIAL', label: 'Editorial y Medios Digitales' },
+                        { value: 'PUBLICIDAD', label: 'Publicidad, Marketing y Servicios Creativos' },
+                        { value: 'TURISMO_CULTURAL', label: 'Turismo Cultural y Patrimonio' },
+                        { value: 'OTROS_SECTORES', label: 'Otros Sectores Económicos' },
                       ].map(sector => (
                         <label key={sector.value} className="flex items-center cursor-pointer p-3 border-2 border-gray-200 rounded-xl hover:border-primary-500 transition-all">
                           <input
@@ -525,29 +525,51 @@ const EntrepreneurForm = () => {
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Forma legal *
                     </label>
-                    <div className="flex gap-4">
-                      <label className="flex items-center cursor-pointer p-4 border-2 border-gray-200 rounded-xl hover:border-primary-500 transition-all flex-1">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <label className="flex items-center cursor-pointer p-4 border-2 border-gray-200 rounded-xl hover:border-primary-500 transition-all">
                         <input
                           type="radio"
                           name="legalStatus"
-                          value="INFORMAL"
-                          checked={formData.legalStatus === 'INFORMAL'}
+                          value="NO_FORMALIZADO"
+                          checked={formData.legalStatus === 'NO_FORMALIZADO'}
                           onChange={handleInputChange}
                           required
                           className="w-5 h-5 text-primary-600 focus:ring-primary-500"
                         />
-                        <span className="ml-2 text-gray-700">Informal</span>
+                        <span className="ml-2 text-sm text-gray-700">Sector no formalizado</span>
                       </label>
-                      <label className="flex items-center cursor-pointer p-4 border-2 border-gray-200 rounded-xl hover:border-primary-500 transition-all flex-1">
+                      <label className="flex items-center cursor-pointer p-4 border-2 border-gray-200 rounded-xl hover:border-primary-500 transition-all">
                         <input
                           type="radio"
                           name="legalStatus"
-                          value="FORMAL"
-                          checked={formData.legalStatus === 'FORMAL'}
+                          value="PERSONA_NATURAL"
+                          checked={formData.legalStatus === 'PERSONA_NATURAL'}
                           onChange={handleInputChange}
                           className="w-5 h-5 text-primary-600 focus:ring-primary-500"
                         />
-                        <span className="ml-2 text-gray-700">Formal (CNR)</span>
+                        <span className="ml-2 text-sm text-gray-700">Persona Natural</span>
+                      </label>
+                      <label className="flex items-center cursor-pointer p-4 border-2 border-gray-200 rounded-xl hover:border-primary-500 transition-all">
+                        <input
+                          type="radio"
+                          name="legalStatus"
+                          value="SOCIEDAD_ANONIMA"
+                          checked={formData.legalStatus === 'SOCIEDAD_ANONIMA'}
+                          onChange={handleInputChange}
+                          className="w-5 h-5 text-primary-600 focus:ring-primary-500"
+                        />
+                        <span className="ml-2 text-sm text-gray-700">Sociedad anónima</span>
+                      </label>
+                      <label className="flex items-center cursor-pointer p-4 border-2 border-gray-200 rounded-xl hover:border-primary-500 transition-all">
+                        <input
+                          type="radio"
+                          name="legalStatus"
+                          value="ASOCIACION_COOPERATIVA"
+                          checked={formData.legalStatus === 'ASOCIACION_COOPERATIVA'}
+                          onChange={handleInputChange}
+                          className="w-5 h-5 text-primary-600 focus:ring-primary-500"
+                        />
+                        <span className="ml-2 text-sm text-gray-700">Asociación o cooperativa</span>
                       </label>
                     </div>
                   </div>
@@ -637,9 +659,9 @@ const EntrepreneurForm = () => {
                       {[
                         { value: 'AHORROS_PROPIOS', label: 'Ahorros propios' },
                         { value: 'FAMILIARES', label: 'Familiares/amigos' },
-                        { value: 'CREDITOS', label: 'Créditos bancarios' },
-                        { value: 'COOPERATIVAS', label: 'Cooperativas' },
-                        { value: 'PROGRAMAS_GOB', label: 'Programas gubernamentales' },
+                        { value: 'FONDOS_NO_REEMBOLSABLES', label: 'Fondos no reembolsables (capital semilla)' },
+                        { value: 'CREDITOS', label: 'Créditos' },
+                        { value: 'PRESTAMOS_INFORMALES', label: 'Préstamos informales' },
                         { value: 'INVERSIONISTAS', label: 'Inversionistas' },
                       ].map(source => (
                         <label key={source.value} className="flex items-center cursor-pointer p-3 border-2 border-gray-200 rounded-xl hover:border-primary-500 transition-all">
@@ -968,9 +990,8 @@ const EntrepreneurForm = () => {
                 <div className="bg-primary-50 border-2 border-primary-200 rounded-2xl p-6 mb-6">
                   <p className="text-gray-700 leading-relaxed">
                     Declaro que los datos proporcionados son verídicos y autorizo a la{' '}
-                    <strong>OEI (Organización de Estados Iberoamericanos)</strong> y{' '}
-                    <strong>Alice Lardé</strong> a utilizarlos únicamente con fines de diagnóstico, 
-                    capacitación y fortalecimiento del ecosistema emprendedor en El Salvador.
+                    <strong>OEI (Organización de Estados Iberoamericanos)</strong> a utilizarlos únicamente con fines de diagnóstico, 
+                    vinculación y fortalecimiento del ecosistema emprendedor en El Salvador.
                   </p>
                 </div>
 
@@ -993,7 +1014,7 @@ const EntrepreneurForm = () => {
                     ¡Estás a punto de completar tu registro!
                   </p>
                   <p className="text-success-700 text-sm">
-                    Al enviar este formulario, tu información será registrada y el equipo de OEI se pondrá 
+                    Al enviar este formulario, tu información será registrada y el equipo Alice Lardé se pondrá 
                     en contacto contigo para brindarte el apoyo que necesitas para hacer crecer tu emprendimiento.
                   </p>
                 </div>
