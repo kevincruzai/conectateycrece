@@ -214,12 +214,8 @@ const LandingPage = () => {
               Una iniciativa de
             </p>
             <div className="flex items-center justify-center gap-12">
-              <div className="text-3xl font-bold text-primary-600">
-                OEI El Salvador
-              </div>
-              <div className="w-px h-12 bg-gray-300"></div>
               <div className="text-3xl font-bold text-gray-700">
-                Alice Lardé
+                El equipo Alice Lardé
               </div>
             </div>
           </div>
@@ -229,7 +225,7 @@ const LandingPage = () => {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p>© 2025 OEI El Salvador & Alice Lardé - Sistema de Gestión Formativa</p>
+          <p>© 2025 Alice Lardé - Sistema de Gestión Formativa</p>
           <p className="text-sm mt-2">Fortaleciendo el ecosistema emprendedor salvadoreño</p>
         </div>
       </footer>

@@ -1066,7 +1066,7 @@ const EntrepreneurForm = () => {
 
         {/* Footer */}
         <div className="text-center mt-8 text-gray-500 text-sm">
-          <p>© 2025 OEI El Salvador & Alice Lardé - Sistema de Gestión Formativa</p>
+          <p>© 2025 Alice Lardé - Sistema de Gestión Formativa</p>
         </div>
       </div>
     </div>
